@@ -91,8 +91,6 @@ GEM
     ffi (1.17.2-x86_64-linux-gnu)
     globalid (1.2.1)
       activesupport (>= 6.1)
-    groupdate (6.4.0)
-      activesupport (>= 6.1)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     jbuilder (2.13.0)
@@ -212,7 +210,7 @@ GEM
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
     semantic_range (3.1.0)
-    spring (4.3.0)
+    spring (4.2.1)
     sprockets (4.2.2)
       concurrent-ruby (~> 1.0)
       logger
@@ -263,7 +261,6 @@ DEPENDENCIES
   chartkick
   concurrent-ruby (= 1.2.2)
   dotenv-rails
-  groupdate
   jbuilder (~> 2.7)
   jquery-rails
   kaminari
@@ -275,7 +272,7 @@ DEPENDENCIES
   rails (~> 6.1.7, >= 6.1.7.10)
   sass-rails (>= 6)
   selenium-webdriver (>= 4.0.0.rc1)
-  spring
+  spring (= 4.2.1)
   turbolinks (~> 5)
   tzinfo-data
   web-console (>= 4.1.0)
