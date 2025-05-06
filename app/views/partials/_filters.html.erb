@@ -19,6 +19,11 @@
             {}, class: "form-select" %>
     </div>
 
+    <div class="mb-3">
+      <%= f.label :page, "Page", class: "form-label fw-semibold" %>
+      <%= f.number_field :page, value: (params[:page] || 1), class: "form-control", min: 1 %>
+    </div>
+
     <%= f.submit "Apply", class: "btn btn-primary w-100 fw-semibold" %>
   <% end %>
 </div>

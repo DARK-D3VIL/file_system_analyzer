@@ -16,16 +16,22 @@ class BrowseController < ApplicationController
     selected_path = params[:path]
     session[:selected_folder] = selected_path
     FetchDataJob.perform_later(current_user.id, selected_path)
-    redirect_to dashboard_path, notice: "Folder selected: #{selected_path}"
+    render turbo_stream: turbo_stream.replace("job-status", partial: "partials/job_started_toast", locals: { message: "⏳ Fetching data..." })
+    # redirect_to dashboard_path, notice: "Folder selected: #{selected_path}"
   end
 
   private
 
   def set_sftp_session
-    if @sftp.nil? || !@sftp&.session&.open?
-      @sftp = SftpService.new(current_user).connect
+    begin
+      if @sftp.nil? || !@sftp&.session&.open?
+        @sftp = SftpService.new(current_user).connect
+      end
+    rescue => e
+      reset_session
+      flash[:alert] = "Authentication failed: #{e.message}. Please log in again."
+      redirect_to root_path
     end
-    @sftp
   end
 
   def permitted_params

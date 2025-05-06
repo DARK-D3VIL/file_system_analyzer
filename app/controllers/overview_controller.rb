@@ -1,30 +1,33 @@
 class OverviewController < ApplicationController
   before_action :authenticate_user!
-  before_action :apply_filters
 
   def index
-    @files = @filtered_files
-    @files = @files.page(get_page).per(50)
+    @files = current_user.file_records.includes(:tags)
+    apply_filters(@files)
+    @files= @files.page(get_page).per(50)
   end
   
   def anomalous
-    @files = @filtered_files.where(is_anomalous: true)
+    @files = current_user.file_records.where(is_anomalous: true).includes(:tags)
+    apply_filters(@files)
     @files= @files.page(get_page).per(50)
   end
 
-  def duplicate
-    @files = @filtered_files.where(is_duplicate: true)
+  def duplicates
+    @files = current_user.file_records.where(is_duplicate: true).includes(:tags)
+    apply_filters(@files)
     @files= @files.page(get_page).per(50)
   end
 
   def archivable
-    @files = @filtered_files.where(is_archivable: true)
+    @files = current_user.file_records.where(is_archivable: true).includes(:tags)
+    apply_filters(@files)
     @files= @files.page(get_page).per(50)
   end
 
   private
 
-  def apply_filters
+  def apply_filters(files)
     query = nil
     if permitted_params[:search].present?
       query = permitted_params[:search].to_s.strip
@@ -44,8 +47,6 @@ class OverviewController < ApplicationController
     if permitted_params[:sort_by].present?
       sort_by = params[:sort_by]
     end
-
-    files = current_user.file_records.includes(:tags)
 
     if !query.nil?
       files = files.where("file_name ILIKE ?", "%#{query}%")

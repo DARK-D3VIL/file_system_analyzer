@@ -13,7 +13,7 @@ class FetchDataJob < ApplicationJob
     files = collect_metadata(ssh, directory)
 
     files.each do |file|
-      if is_media(file[:file_name],media_ext)
+      if is_media(file[:file_name], media_ext)
         next
       end
 
@@ -21,13 +21,13 @@ class FetchDataJob < ApplicationJob
         next
       end
 
-      file_type     = find_file_type(file[:file_name],web_ext,doc_ext,code_ext)
+      file_type     = find_file_type(file[:file_name], web_ext, doc_ext, code_ext)
       is_anomalous  = is_anomalous(file[:file_name])
       is_archivable = file[:accessed_at] < 1.month.ago
-      is_duplicate = false
+      is_duplicate  = false
 
       group = Group.find_by(content_hash: file[:content_hash])
-      group_id = nil;
+      group_id = nil
       if group.present?
         is_duplicate = true
         group_id = group.id
@@ -53,33 +53,47 @@ class FetchDataJob < ApplicationJob
         if file[:created_at] < original_file.created_at
           group.update!(original_file_id: file_record.id)
           original_file.update!(is_duplicate: true)
-          file_record.update!(is_duplicate: false,group_id: group.id)
+          file_record.update!(is_duplicate: false, group_id: group.id)
         else
           file_record.update!(is_duplicate: true, group_id: group.id)
         end
-      
+
         group.total_files += 1
         group.saved_size += file[:file_size]
         group.save!
       else
         group = Group.create!(
-          content_hash:     file[:content_hash],
-          saved_size:       0,
-          total_files:      1,
+          content_hash: file[:content_hash],
+          saved_size: 0,
+          total_files: 1,
           original_file_id: file_record.id,
-          group_type:       file_type
+          group_type: file_type
         )
         file_record.update!(group_id: group.id, is_duplicate: false)
       end
 
-      if file[:created_at]  > 7.days.ago
+      if file[:created_at] > 7.days.ago
         create_tag(file_record, 'recently_created')
       end
 
       if file[:modified_at] > 7.days.ago
-        create_tag(file_record, 'recently_modified') 
+        create_tag(file_record, 'recently_modified')
       end
     end
+
+    Turbo::StreamsChannel.broadcast_append_to(
+      "job_notifications_user_#{user_id}",
+      target: "job-status",
+      partial: "partials/job_complete_toast",
+      locals: { message: "✅ Data fetched successfully from #{directory}" }
+    )
+
+    Turbo::StreamsChannel.broadcast_replace_to(
+      "job_notifications_user_#{user.id}",
+      target: "job-redirect",
+      partial: "partials/redirect_frame",
+      locals: { url: Rails.application.routes.url_helpers.dashboard_path }
+    )
   end
 
   private
@@ -97,18 +111,14 @@ class FetchDataJob < ApplicationJob
     BASH
 
     output = ssh.exec!(command)
-    if output.nil? || output.empty?
-      return []
-    end
+    return [] if output.nil? || output.empty?
 
     files = []
 
     output.lines.each do |line|
       path, size, created, accessed, modified, hash = line.strip.split('|')
-      created_time = Time.at(modified.to_i) 
-      if created.to_i > 0 
-        created_time = Time.at(created.to_i)
-      end
+      created_time = Time.at(modified.to_i)
+      created_time = Time.at(created.to_i) if created.to_i > 0
 
       files << {
         file_name:    File.basename(path),
@@ -122,32 +132,23 @@ class FetchDataJob < ApplicationJob
     end
     files
   end
-  
+
   def is_media(file_name, media_extensions)
     ext = File.extname(file_name).downcase
     media_extensions.include?(ext)
   end
-  
+
   def is_anomalous(file_name)
     ext = File.extname(file_name)
-    if ext.empty? || file_name.include?('@') || file_name.include?('!') || file_name.include?('$')
-      return true
-    end
-    false
+    ext.empty? || file_name.include?('@') || file_name.include?('!') || file_name.include?('$')
   end
-  
+
   def find_file_type(file_name, web, doc, code)
     ext = File.extname(file_name).downcase
-  
-    if web.include?(ext)
-      return 'web'
-    elsif doc.include?(ext)
-      return 'doc'
-    elsif code.include?(ext)
-      return 'code'
-    else
-      return 'not_defined'
-    end
+    return 'web' if web.include?(ext)
+    return 'doc' if doc.include?(ext)
+    return 'code' if code.include?(ext)
+    'not_defined'
   end
 
   def create_tag(file_record, tag_name)

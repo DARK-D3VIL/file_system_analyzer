@@ -24,8 +24,9 @@
     <ul class="list-group list-group-flush">
       <% @entries.each do |entry| %>
         <li class="list-group-item d-flex justify-content-between align-items-center">
-          <%= button_to browse_path, method: :get, params: { path: File.join(@current_path, entry.name).gsub(/\/$/, '/') },
-                          class: "btn btn-link text-start text-decoration-none" do %>
+          <%= button_to browse_path, method: :get,
+                        params: { path: File.join(@current_path, entry.name).gsub(/\/$/, '/') },
+                        class: "btn btn-link text-start text-decoration-none" do %>
             <i class="bi bi-folder me-2 text-warning"></i>
             <%= entry.name %>
           <% end %>
