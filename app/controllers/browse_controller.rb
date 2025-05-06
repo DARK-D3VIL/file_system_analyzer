@@ -15,7 +15,6 @@ class BrowseController < ApplicationController
   def select
     selected_path = params[:path]
     session[:selected_folder] = selected_path
-    @sftp&.close
     FetchDataJob.perform_later(current_user.id, selected_path)
     redirect_to dashboard_path, notice: "Folder selected: #{selected_path}"
   end
@@ -26,6 +25,7 @@ class BrowseController < ApplicationController
     if @sftp.nil? || !@sftp&.session&.open?
       @sftp = SftpService.new(current_user).connect
     end
+    @sftp
   end
 
   def permitted_params
@@ -36,7 +36,7 @@ class BrowseController < ApplicationController
     begin
       res = []
       @sftp.dir.foreach(path) do |entry|
-        if entry.name != '.' && entry.name != '..' && entry.directory? && !entry.name.start_with?('.')
+        if entry.name != '.' && entry.name != '..' && entry.directory? && entry.name[0] != '.'
           res << entry
         end
       end

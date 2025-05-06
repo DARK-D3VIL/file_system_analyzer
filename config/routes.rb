@@ -12,4 +12,9 @@ Rails.application.routes.draw do
   get "dashboard", to: "dashboard#index"
   get "files", to: "files#index"
   delete "files/delete/:id", to: "files#destroy", as: :delete_file
+
+  get "overview", to: "overview#index"
+  get "overview/duplicates", to: "overview#duplicates"
+  get "overview/anomalous", to: "overview#anomalous"
+  get "overview/archivable", to: "overview#archivable"
 end

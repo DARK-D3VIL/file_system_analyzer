@@ -3,8 +3,12 @@ class SessionController < ApplicationController
   end
 
   def create
-    @user = EphemeralUser.new(user_params)
-    @user.password = params[:ephemeral_user][:password]
+    host = params[:host]
+    username = params[:username]
+    password = params[:password]
+    port = params[:port] || 22
+
+    @user = EphemeralUser.new(host: host, username: username, password: password, port: port)
 
     if @user.save
       session[:ephemeral_user_id] = @user.id
@@ -28,6 +32,6 @@ class SessionController < ApplicationController
   private
 
   def user_params
-    params.require(:ephemeral_user).permit(:username, :host, :port, :password)
+    params.permit(:username, :host, :port, :password)
   end
 end

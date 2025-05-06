@@ -2,7 +2,7 @@
   <div class="card shadow p-4 rounded-4" style="min-width: 350px; max-width: 500px; width: 100%;">
     <h2 class="text-center mb-4">🔐 Login to Server</h2>
 
-    <%= form_with model: EphemeralUser.new, url: login_path, local: true do |form| %>
+    <%= form_with url: login_path, method: :post, local: true do |form| %>
       <div class="mb-3">
         <%= form.label :host, class: "form-label" %>
         <%= form.text_field :host, class: "form-control", placeholder: "sftp.example.com" %>
