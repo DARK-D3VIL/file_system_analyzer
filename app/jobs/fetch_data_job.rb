@@ -81,13 +81,6 @@ class FetchDataJob < ApplicationJob
       end
     end
 
-    Turbo::StreamsChannel.broadcast_append_to(
-      "job_notifications_user_#{user_id}",
-      target: "job-status",
-      partial: "partials/job_complete_toast",
-      locals: { message: "✅ Data fetched successfully from #{directory}" }
-    )
-
     Turbo::StreamsChannel.broadcast_replace_to(
       "job_notifications_user_#{user.id}",
       target: "job-redirect",

@@ -14,11 +14,6 @@
 
   <body>
     <%= render 'partials/navbar' %>
-    <% if current_user.present? %>
-      <%= turbo_stream_from "job_notifications_user_#{current_user.id}" %>
-    <% end %>
-    <div id="job-status"></div>
-    <div id="job-redirect"></div>
     <div class="container mt-4">
       <% flash.each do |type, message| %>
         <div class="alert <%= "alert-#{type}" %> alert-dismissible fade show" role="alert">

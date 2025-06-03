@@ -2,27 +2,27 @@ class OverviewController < ApplicationController
   before_action :authenticate_user!
 
   def index
-    @files = current_user.file_records.includes(:tags)
-    apply_filters(@files)
-    @files= @files.page(get_page).per(50)
+    files = current_user.file_records.includes(:tags)
+    files = apply_filters(files)
+    @files= files.page(get_page).per(10)
   end
   
   def anomalous
-    @files = current_user.file_records.where(is_anomalous: true).includes(:tags)
-    apply_filters(@files)
-    @files= @files.page(get_page).per(50)
+    files = current_user.file_records.where(is_anomalous: true).includes(:tags)
+    files = apply_filters(files)
+    @files= files.page(get_page).per(10)
   end
 
   def duplicates
-    @files = current_user.file_records.where(is_duplicate: true).includes(:tags)
-    apply_filters(@files)
-    @files= @files.page(get_page).per(50)
+    files = current_user.file_records.where(is_duplicate: true).includes(:tags)
+    files = apply_filters(files)
+    @files= files.page(get_page).per(10)
   end
 
   def archivable
-    @files = current_user.file_records.where(is_archivable: true).includes(:tags)
-    apply_filters(@files)
-    @files= @files.page(get_page).per(50)
+    files = current_user.file_records.where(is_archivable: true).includes(:tags)
+    files = apply_filters(files)
+    @files= files.page(get_page).per(10)
   end
 
   private
@@ -60,7 +60,7 @@ class OverviewController < ApplicationController
       files = files.joins(:tags).where(tags: { tag_name: tags })
     end
 
-    @filtered_files = files.order(sort_by => :desc)
+    files.order(sort_by => :desc)
   end
   
   def get_page
@@ -72,7 +72,7 @@ class OverviewController < ApplicationController
   end
 
   def permitted_params
-    params.permit(:search, :folder, :tags, :sort_by, :page)
+    params.permit(:search, :folder, :tags, :sort_by, :page, :commit)
   end
 
 end
