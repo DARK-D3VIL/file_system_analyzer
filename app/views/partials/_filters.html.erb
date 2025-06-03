@@ -1,0 +1,29 @@
+<div class="card shadow-sm p-4 rounded-3">
+  <h5 class="mb-3 fw-semibold text-primary">Filters</h5>
+
+  <%= form_with url: request.path, method: :get, local: true do |f| %>
+    <div class="mb-3">
+      <%= f.label :folder, "Folder", class: "form-label fw-semibold" %>
+      <%= f.text_field :folder, value: params[:folder], class: "form-control" %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :tags, "Tags", class: "form-label fw-semibold" %>
+      <%= f.select :tags, options_for_select([["Recently Created", "recently_created"], ["Recently Modified", "recently_modified"]], params[:tags]), {}, class: "form-select" %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :sort_by, "Sort By", class: "form-label fw-semibold" %>
+      <%= f.select :sort_by,
+            options_for_select([["Created At", "created_at"], ["Modified At", "modified_at"], ["Accessed At", "accessed_at"]], params[:sort_by]),
+            {}, class: "form-select" %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :page, "Page", class: "form-label fw-semibold" %>
+      <%= f.number_field :page, value: (params[:page] || 1), class: "form-control", min: 1 %>
+    </div>
+
+    <%= f.submit "Apply", class: "btn btn-primary w-100 fw-semibold" %>
+  <% end %>
+</div>

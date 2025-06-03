@@ -1,0 +1,105 @@
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="mb-0">
+      <i class="bi bi-folder2-open text-warning me-2"></i> Current Path:
+      <span class="text-muted"><%= @current_path %></span>
+    </h3>
+  </div>
+
+  <% if @current_path != session[:selected_folder] %>
+    <% parent_path = File.dirname(@current_path) %>
+    <%= button_to "⬅️ Back to Parent", files_path, params: { path: parent_path }, method: :get,
+                  class: "btn btn-outline-secondary mb-4" %>
+  <% end %>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-light fw-semibold">
+      <i class="bi bi-folder text-warning me-2"></i> Folders
+    </div>
+    <ul class="list-group list-group-flush">
+      <% @entries[:folders].each do |folder| %>
+        <li class="list-group-item">
+          <%= button_to files_path, method: :get, params: { path: folder[:full_path] },
+                          class: "btn btn-link text-decoration-none" do %>
+            <i class="bi bi-folder-fill text-warning me-2"></i> <%= folder[:name] %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-light fw-semibold">
+      <i class="bi bi-file-earmark-text me-2 text-secondary"></i> Files
+    </div>
+    <div class="card-body">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>File Name</th>
+            <th>Status</th>
+            <th>File Size</th>
+            <th>Tags</th>
+            <th>Options</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @entries[:files].each do |file| %>
+            <% record = file[:record] %>
+            <tr>
+              <td class="fw-semibold">
+                <i class="bi bi-file-earmark me-1"></i> <%= file[:name] %>
+              </td>
+              <td>
+                <% if record.present? %>
+                  <% if !record.duplicate? %>
+                    <span class="badge bg-primary">Original</span>
+                  <% end %>
+                  <% if record.duplicate? %>
+                    <span class="badge bg-danger">Duplicate</span>
+                  <% end %>
+                  <% if record.anomalous? %>
+                    <span class="badge bg-warning text-dark">Anomalous</span>
+                  <% end %>
+                  <% if record.archivable? %>
+                    <span class="badge bg-success">Archivable</span>
+                  <% end %>
+                <% else %>
+                  <span class="text-muted">No record</span>
+                <% end %>
+              </td>
+              <td class="text-muted"><%= number_to_human_size(record&.file_size || 0) %></td>
+              <td>
+                <% if record&.tags.present? %>
+                  <% record.tags.each do |tag| %>
+                    <span class="badge bg-info text-dark"><%= tag.tag_name %></span>
+                  <% end %>
+                <% else %>
+                  <span class="badge bg-secondary">No Tags</span>
+                <% end %>
+              </td>
+              <td>
+                <% if record.present? %>
+                  <%= button_to "🗑️", delete_file_path(record.id), method: :delete,
+                              class: "btn btn-danger btn-sm", data: { turbo_confirm: "Are you sure?" } %>
+                <% else %>
+                  <span class="text-muted">No record found</span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card bg-light border-0 shadow-sm">
+    <div class="card-header fw-semibold"><i class="bi bi-info-circle me-2"></i> Legend</div>
+    <div class="card-body">
+      <ul class="mb-0">
+        <li><span class="badge bg-primary">Original</span>: File is not a duplicate</li>
+        <li><span class="badge bg-danger">Duplicate</span>: File with same content exists</li>
+        <li><span class="badge bg-warning text-dark">Anomalous</span>: Suspicious file name, extension, or access time</li>
+        <li><span class="badge bg-success">Archivable</span>: File is old and eligible for archiving</li>
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,76 @@
+<div class="container mt-5">
+  <h1 class="mb-4 fw-bold">
+    <i class="bi bi-speedometer2 me-2"></i> Dashboard Overview
+  </h1>
+
+  <div class="row g-4 mb-5">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm bg-primary text-white">
+        <div class="card-body text-center">
+          <h5 class="card-title">Total Files</h5>
+          <h3 class="card-text"><%= @total_files %></h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm bg-success text-white">
+        <div class="card-body text-center">
+          <h5 class="card-title">Total Size (MB)</h5>
+          <h3 class="card-text"><%= @total_size_mb %></h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-2">
+      <div class="card border-0 shadow-sm bg-warning text-dark">
+        <div class="card-body text-center">
+          <h5 class="card-title">Duplicates</h5>
+          <h3 class="card-text"><%= @duplicates_count %></h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-2">
+      <div class="card border-0 shadow-sm bg-info text-white">
+        <div class="card-body text-center">
+          <h5 class="card-title">Archivable</h5>
+          <h3 class="card-text"><%= @archivable_count %></h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-2">
+      <div class="card border-0 shadow-sm bg-danger text-white">
+        <div class="card-body text-center">
+          <h5 class="card-title">Anomalous</h5>
+          <h3 class="card-text"><%= @anomalous_count %></h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-3">
+            <i class="bi bi-pie-chart-fill me-2 text-primary"></i> File Type Distribution
+          </h5>
+          <%= pie_chart @file_type_distribution, height: "300px", donut: true,
+                        library: { title: { text: "File Types" } } %>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-3">
+            <i class="bi bi-bar-chart-fill me-2 text-success"></i> Duplicate Group Summary
+          </h5>
+          <%= column_chart @chart_data, height: "300px", xtitle: "Duplicate Files in Group", ytitle: "Saved Size (bytes)" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

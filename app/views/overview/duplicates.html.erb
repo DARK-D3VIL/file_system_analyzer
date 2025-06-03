@@ -1,0 +1,15 @@
+<div class="container-fluid">
+  <div class="row g-3">
+    <div class="col-md-2 col-12">
+      <%= render 'partials/sidebar' %>
+    </div>
+
+    <div class="col-md-8 col-12">
+      <%= render 'partials/file_table', files: @files %>
+    </div>
+
+    <div class="col-md-2 col-12">
+      <%= render 'partials/filters' %>
+    </div>
+  </div>
+</div>

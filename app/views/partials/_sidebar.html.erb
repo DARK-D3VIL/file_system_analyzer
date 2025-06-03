@@ -1,0 +1,15 @@
+<nav class="bg-white p-4 rounded-3 shadow-sm border">
+  <h5 class="mb-4 fw-semibold text-primary">Categories</h5>
+
+  <%= link_to 'All Files', overview_path,
+      class: "nav-link mb-2 px-3 py-2 rounded-2 #{'bg-primary text-white fw-semibold shadow-sm' if action_name == 'index'}" %>
+
+  <%= link_to 'Duplicates', overview_duplicates_path,
+      class: "nav-link mb-2 px-3 py-2 rounded-2 #{'bg-primary text-white fw-semibold shadow-sm' if action_name == 'duplicates'}" %>
+
+  <%= link_to 'Anomalous', overview_anomalous_path,
+      class: "nav-link mb-2 px-3 py-2 rounded-2 #{'bg-primary text-white fw-semibold shadow-sm' if action_name == 'anomalous'}" %>
+
+  <%= link_to 'Archivable', overview_archivable_path,
+      class: "nav-link px-3 py-2 rounded-2 #{'bg-primary text-white fw-semibold shadow-sm' if action_name == 'archivable'}" %>
+</nav>

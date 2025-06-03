@@ -1,0 +1,9 @@
+// Place all the styles related to the Overview controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: https://sass-lang.com/
+.nav-link.active {
+    font-weight: bold;
+    background-color: #f0f0f0;
+    border-left: 3px solid #007bff;
+  }
+  

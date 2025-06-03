@@ -1,0 +1,42 @@
+<% if files.present? %>
+  <div class="container mt-4">
+    <% files.each do |file| %>
+      <div class="row justify-content-center mb-4">
+        <div class="col-md-10">
+          <div class="card shadow-sm p-3">
+            <div class="card-body">
+              <h5 class="card-title text-primary mb-3"><%= file.file_name %></h5>
+
+              <p class="mb-2">
+                <strong>Path:</strong>
+                <span class="d-block text-break text-muted"><%= file.path %></span>
+              </p>
+
+              <% if file.tags.any? %>
+                <p class="mb-2">
+                  <strong>Tags:</strong><br>
+                  <% file.tags.each do |tag| %>
+                    <span class="badge bg-secondary me-1 mb-1"><%= tag.tag_name %></span>
+                  <% end %>
+                </p>
+              <% end %>
+
+              <% if file.accessed_at.present? %>
+                <p class="mb-2">
+                  <strong>Last Accessed:</strong>
+                  <%= file.accessed_at.strftime("%Y-%m-%d %H:%M") %>
+                </p>
+              <% end %>
+
+              <% if file.group&.original_file_id == file.id %>
+                <span class="badge bg-success">Original File</span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <p class="text-muted mt-4 text-center">No files to display.</p>
+<% end %>
