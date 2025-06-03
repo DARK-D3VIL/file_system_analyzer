@@ -1,30 +1,33 @@
 class OverviewController < ApplicationController
   before_action :authenticate_user!
-  before_action :apply_filters
 
   def index
-    @files = @filtered_files
-    @files = @files.page(get_page).per(50)
+    files = current_user.file_records.includes(:tags)
+    files = apply_filters(files)
+    @files= files.page(get_page).per(10)
   end
   
   def anomalous
-    @files = @filtered_files.where(is_anomalous: true)
-    @files= @files.page(get_page).per(50)
+    files = current_user.file_records.where(is_anomalous: true).includes(:tags)
+    files = apply_filters(files)
+    @files= files.page(get_page).per(10)
   end
 
-  def duplicate
-    @files = @filtered_files.where(is_duplicate: true)
-    @files= @files.page(get_page).per(50)
+  def duplicates
+    files = current_user.file_records.where(is_duplicate: true).includes(:tags)
+    files = apply_filters(files)
+    @files= files.page(get_page).per(10)
   end
 
   def archivable
-    @files = @filtered_files.where(is_archivable: true)
-    @files= @files.page(get_page).per(50)
+    files = current_user.file_records.where(is_archivable: true).includes(:tags)
+    files = apply_filters(files)
+    @files= files.page(get_page).per(10)
   end
 
   private
 
-  def apply_filters
+  def apply_filters(files)
     query = nil
     if permitted_params[:search].present?
       query = permitted_params[:search].to_s.strip
@@ -45,8 +48,6 @@ class OverviewController < ApplicationController
       sort_by = params[:sort_by]
     end
 
-    files = current_user.file_records.includes(:tags)
-
     if !query.nil?
       files = files.where("file_name ILIKE ?", "%#{query}%")
     end
@@ -59,7 +60,7 @@ class OverviewController < ApplicationController
       files = files.joins(:tags).where(tags: { tag_name: tags })
     end
 
-    @filtered_files = files.order(sort_by => :desc)
+    files.order(sort_by => :desc)
   end
   
   def get_page
@@ -71,7 +72,7 @@ class OverviewController < ApplicationController
   end
 
   def permitted_params
-    params.permit(:search, :folder, :tags, :sort_by, :page)
+    params.permit(:search, :folder, :tags, :sort_by, :page, :commit)
   end
 
 end

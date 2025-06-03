@@ -1,3 +1,8 @@
+<% if current_user.present? %>
+  <%= turbo_stream_from "job_notifications_user_#{current_user.id}" %>
+<% end %>
+<div id="job-status"></div>
+<div id="job-redirect"></div>
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
     <h3 class="mb-0 me-3">
@@ -6,7 +11,7 @@
     </h3>
 
     <%= form_with url: select_folder_path, method: :post, class: "d-inline" do %>
-      <%= hidden_field_tag :path, @current_path %>
+      <input type="hidden" name="path" value="<%= @current_path %>">
       <%= submit_tag "✅ Select this Folder", class: "btn btn-success" %>
     <% end %>
   </div>
@@ -24,8 +29,9 @@
     <ul class="list-group list-group-flush">
       <% @entries.each do |entry| %>
         <li class="list-group-item d-flex justify-content-between align-items-center">
-          <%= button_to browse_path, method: :get, params: { path: File.join(@current_path, entry.name).gsub(/\/$/, '/') },
-                          class: "btn btn-link text-start text-decoration-none" do %>
+          <%= button_to browse_path, method: :get,
+                        params: { path: File.join(@current_path, entry.name).gsub(/\/$/, '/') },
+                        class: "btn btn-link text-start text-decoration-none" do %>
             <i class="bi bi-folder me-2 text-warning"></i>
             <%= entry.name %>
           <% end %>

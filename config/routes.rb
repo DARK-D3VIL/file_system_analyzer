@@ -17,4 +17,5 @@ Rails.application.routes.draw do
   get "overview/duplicates", to: "overview#duplicates"
   get "overview/anomalous", to: "overview#anomalous"
   get "overview/archivable", to: "overview#archivable"
+  mount ActionCable.server => '/cable'
 end

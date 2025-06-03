@@ -34,8 +34,14 @@ class FilesController < ApplicationController
   private
 
   def set_sftp_session
-    if @sftp.nil? || !@sftp&.session&.open?
-      @sftp = SftpService.new(current_user).connect
+    begin
+      if @sftp.nil? || !@sftp&.session&.open?
+        @sftp = SftpService.new(current_user).connect
+      end
+    rescue => e
+      reset_session
+      flash[:alert] = "Authentication failed: #{e.message}. Please log in again."
+      redirect_to root_path
     end
   end
 
